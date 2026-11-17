@@ -1,0 +1,37 @@
+name: TarratNFC
+options:
+  bundleIdPrefix: app.tarrat
+  deploymentTarget:
+    iOS: "17.0"
+settings:
+  SWIFT_VERSION: "5.0"
+targets:
+  TarratNFC:
+    type: application
+    platform: iOS
+    sources: [Sources]
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleDisplayName: Tarrat NFC
+        UILaunchScreen: {}
+        NFCReaderUsageDescription: Writes the sticker pack links to NFC tags.
+    entitlements:
+      path: Sources/TarratNFC.entitlements
+      properties:
+        com.apple.developer.nfc.readersession.formats: [TAG]
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: app.tarrat.nfc
+      TARGETED_DEVICE_FAMILY: "1"
+      CODE_SIGN_STYLE: Automatic
+    scheme:
+      testTargets: [TarratNFCUITests]
+  TarratNFCUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [UITests]
+    dependencies:
+      - target: TarratNFC
+    settings:
+      GENERATE_INFOPLIST_FILE: YES
+      TARGETED_DEVICE_FAMILY: "1"

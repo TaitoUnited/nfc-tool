@@ -1,0 +1,15 @@
+.DS_Store
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.kotlin/
+captures/
+# Generated from ios/project.yml by xcodegen.
+ios/TarratNFC.xcodeproj/
+xcuserdata/
+# The upload key and its passwords never go into git.
+keystore.properties
+*.jks
+*.keystore
