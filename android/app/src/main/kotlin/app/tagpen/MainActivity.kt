@@ -1,4 +1,4 @@
-package app.tarrat.nfc
+package app.tagpen
 
 import android.app.PendingIntent
 import android.content.Intent
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,16 +23,18 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -50,11 +53,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
@@ -140,45 +144,77 @@ fun AppTheme(content: @Composable () -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Screen(writer: TagWriter, nfc: Nfc, openNfcSettings: () -> Unit) {
-    var protectTarget by remember { mutableStateOf<Pack?>(null) }
+    var confirming by remember { mutableStateOf(false) }
     val available = nfc == Nfc.Ready || nfc == Nfc.Demo
     val passphrase = writer.passphrase
-    // Without this the passphrase field takes the focus back when the sheet closes, and its
-    // keyboard covers the buttons.
+    val content = contentOf(writer.typed)
+    // Without this the fields take the focus back when the sheet closes, and the keyboard covers
+    // the buttons.
     val focus = LocalFocusManager.current
     val start = { job: Job ->
         focus.clearFocus()
         writer.start(job)
     }
 
-    Scaffold(topBar = { TopAppBar(title = { Text("Tarrat NFC") }) }) { padding ->
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.app_name)) }) },
+        bottomBar = {
+            Surface(tonalElevation = 3.dp) {
+                Button(
+                    onClick = { content?.let { start(Job.Write(it)) } },
+                    enabled = available && content != null,
+                    modifier = Modifier.fillMaxWidth().padding(16.dp).imePadding(),
+                ) { Text(stringResource(R.string.write)) }
+            }
+        },
+    ) { padding ->
         LazyColumn(
-            modifier = Modifier.padding(padding).imePadding(),
+            modifier = Modifier.padding(padding),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp),
         ) {
             when (nfc) {
-                Nfc.Demo -> item { Group { Text("Demo: tag taps are simulated, no real tag.", color = demoOrange) } }
+                Nfc.Demo -> item { Group { Text(stringResource(R.string.demo), color = demoOrange) } }
                 Nfc.Missing -> item {
-                    Group { Text("This device cannot write NFC tags.", color = MaterialTheme.colorScheme.error) }
+                    Group { Text(stringResource(R.string.no_nfc), color = MaterialTheme.colorScheme.error) }
                 }
                 Nfc.Off -> item {
                     Group {
-                        Text("NFC is off. Turn it on to write tags.", color = MaterialTheme.colorScheme.error)
-                        TextButton(onClick = openNfcSettings) { Text("Open the NFC settings") }
+                        Text(stringResource(R.string.nfc_off), color = MaterialTheme.colorScheme.error)
+                        TextButton(onClick = openNfcSettings) { Text(stringResource(R.string.open_nfc_settings)) }
                     }
                 }
                 Nfc.Ready -> {}
             }
             item {
+                Group(stringResource(R.string.content), footer = contentFooter(content)) {
+                    OutlinedTextField(
+                        value = writer.typed,
+                        onValueChange = writer::updateTyped,
+                        placeholder = { Text(stringResource(R.string.content_placeholder)) },
+                        maxLines = 5,
+                        enabled = available,
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.None,
+                            autoCorrectEnabled = false,
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            }
+            val status = writer.status
+            if (status != null) {
+                item { Group(stringResource(R.string.last_result)) { Text(say(status)) } }
+            }
+            item {
                 Group(
-                    footer = "Protecting a tag, removing its protection and rewriting a protected tag need it. " +
-                        "Phones read a protected tag as usual. The app does not save it.",
+                    stringResource(R.string.passphrase),
+                    footer = stringResource(if (writer.remember) R.string.passphrase_saved else R.string.passphrase_not_saved),
                 ) {
                     OutlinedTextField(
                         value = passphrase,
-                        onValueChange = { writer.passphrase = it },
-                        label = { Text("Passphrase") },
+                        onValueChange = writer::updatePassphrase,
+                        label = { Text(stringResource(R.string.passphrase)) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.None,
@@ -187,56 +223,63 @@ fun Screen(writer: TagWriter, nfc: Nfc, openNfcSettings: () -> Unit) {
                         ),
                         modifier = Modifier.fillMaxWidth(),
                     )
-                }
-            }
-            if (writer.status.isNotEmpty()) {
-                item { Group("Last result") { Text(writer.status) } }
-            }
-            items(packs) { pack ->
-                Group(pack.id) {
-                    Text(
-                        pack.url,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    TextButton(onClick = { start(Job.Write(pack)) }, enabled = available) {
-                        Text("Write the ${pack.id} link")
-                    }
-                    TextButton(onClick = {
-                        focus.clearFocus()
-                        protectTarget = pack
-                    }, enabled = available && passphrase.isNotEmpty()) {
-                        Text("Protect the ${pack.id} tag")
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.remember), modifier = Modifier.weight(1f))
+                        Switch(checked = writer.remember, onCheckedChange = writer::updateRemember)
                     }
                 }
             }
             item {
-                Group("Any tag") {
-                    TextButton(onClick = { start(Job.Unprotect) }, enabled = available && passphrase.isNotEmpty()) {
-                        Text("Remove the protection")
+                Group(
+                    stringResource(R.string.protect_header),
+                    footer = stringResource(R.string.protect_footer),
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Button(
+                            onClick = {
+                                focus.clearFocus()
+                                confirming = true
+                            },
+                            enabled = available && content != null && passphrase.isNotEmpty(),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text(stringResource(R.string.protect)) }
+                        OutlinedButton(
+                            onClick = { start(Job.Unprotect) },
+                            enabled = available && passphrase.isNotEmpty(),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) { Text(stringResource(R.string.unprotect)) }
                     }
                 }
             }
         }
     }
 
-    protectTarget?.let { pack ->
+    if (confirming) {
         AlertDialog(
-            onDismissRequest = { protectTarget = null },
-            text = { Text("Remember the passphrase \"$passphrase\". Without it, nobody can change the tag again, you included.") },
+            onDismissRequest = { confirming = false },
+            text = { Text(stringResource(R.string.confirm_protect, passphrase)) },
             confirmButton = {
                 TextButton(onClick = {
-                    protectTarget = null
-                    start(Job.Protect(pack))
-                }) { Text("Protect the ${pack.id} tag") }
+                    confirming = false
+                    content?.let { start(Job.Protect(it)) }
+                }) { Text(stringResource(R.string.protect)) }
             },
-            dismissButton = { TextButton(onClick = { protectTarget = null }) { Text("Cancel") } },
+            dismissButton = { TextButton(onClick = { confirming = false }) { Text(stringResource(R.string.cancel)) } },
         )
     }
 
     writer.sheet?.let { sheet -> TapSheet(sheet, writer.isDemo, onCancel = writer::cancel, onDone = writer::dismiss) }
+}
+
+@Composable
+private fun say(words: Words) = stringResource(words.id, *words.args)
+
+@Composable
+private fun contentFooter(content: Content?): String = if (content == null) {
+    stringResource(R.string.content_footer)
+} else {
+    val language = LocalConfiguration.current.locales[0].language
+    say(describe(content)) + " " + say(sizeNote(Ndef.message(content, language).size))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -255,16 +298,16 @@ private fun TapSheet(sheet: TagWriter.Sheet, demo: Boolean, onCancel: () -> Unit
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
-            if (demo) Text("Simulated tag tap", style = MaterialTheme.typography.titleMedium, color = demoOrange)
+            if (demo) Text(stringResource(R.string.simulated_tap), style = MaterialTheme.typography.titleMedium, color = demoOrange)
             val (icon, tint) = when {
                 result == null -> R.drawable.ic_tap to MaterialTheme.colorScheme.primary
                 result.ok -> R.drawable.ic_done to Color(0xFF2E9D4F)
                 else -> R.drawable.ic_failed to MaterialTheme.colorScheme.error
             }
             Icon(painterResource(icon), contentDescription = null, tint = tint, modifier = Modifier.size(56.dp))
-            Text(result?.text ?: sheet.prompt, textAlign = TextAlign.Center)
+            Text(say(result?.text ?: sheet.prompt), textAlign = TextAlign.Center)
             if (result == null) {
-                TextButton(onClick = onCancel) { Text("Cancel") }
+                TextButton(onClick = onCancel) { Text(stringResource(R.string.cancel)) }
             } else {
                 Spacer(Modifier.height(48.dp))
             }

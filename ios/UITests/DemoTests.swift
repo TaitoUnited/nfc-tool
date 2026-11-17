@@ -14,7 +14,14 @@ final class DemoTests: XCTestCase {
     pause(2)
     try shot("1-start")
 
-    app.buttons["Write the Signal link"].tap()
+    // A vertical TextField shows up as a text view, so it is found by its identifier alone.
+    let content = app.descendants(matching: .any).matching(identifier: "tag-content").firstMatch
+    content.tap()
+    content.typeText("https://t.me/addstickers/taitounited")
+    app.buttons["keyboard-done"].firstMatch.tap()
+    pause(1)
+
+    app.buttons["write"].tap()
     pause(0.4)
     try shot("2-hold")
     pause(2.6)
@@ -23,7 +30,8 @@ final class DemoTests: XCTestCase {
 
     type("kumpula26")
     pause(1)
-    app.buttons["Protect the Signal tag"].firstMatch.tap()
+    try shot("3b-ready")
+    tap("protect")
     pause(1.5)
     try shot("4-confirm")
     app.buttons["confirm-protect"].firstMatch.tap()
@@ -33,29 +41,33 @@ final class DemoTests: XCTestCase {
 
     type("wrong")
     pause(1)
-    app.buttons["Write the Signal link"].tap()
+    app.buttons["write"].tap()
     pause(3)
     try shot("6-wrong-passphrase")
     pause(2.6)
 
     type("kumpula26")
     pause(1)
-    let remove = app.buttons["Remove the protection"]
-    for _ in 0..<4 where !(remove.exists && remove.isHittable) {
-      app.swipeUp()
-      pause(0.8)
-    }
-    remove.tap()
+    tap("unprotect")
     pause(3)
     try shot("7-removed")
     pause(2.6)
   }
 
+  private func tap(_ id: String) {
+    let button = app.buttons[id]
+    for _ in 0..<4 where !(button.exists && button.isHittable) {
+      app.swipeUp()
+      pause(0.8)
+    }
+    button.firstMatch.tap()
+  }
+
   private func type(_ text: String) {
-    let field = app.textFields["Passphrase"]
+    let field = app.textFields["passphrase"]
     field.tap()
     let old = field.value as? String ?? ""
-    if old != "Passphrase" {
+    if old != field.placeholderValue {
       field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: old.count))
     }
     field.typeText(text + "\n")

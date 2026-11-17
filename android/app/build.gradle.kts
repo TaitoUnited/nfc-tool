@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "app.tarrat.nfc"
+    namespace = "app.tagpen"
     // Compose 1.12 needs compileSdk 37; targetSdk stays 36, which Google Play asks for since August 2026.
     compileSdk {
         version = release(37) {
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "app.tarrat.nfc"
+        applicationId = "app.tagpen"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

@@ -1,4 +1,4 @@
-package app.tarrat.nfc
+package app.tagpen
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

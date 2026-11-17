@@ -1,5 +1,7 @@
-package app.tarrat.nfc
+package app.tagpen
 
+import android.app.Application
+import android.content.Context
 import android.nfc.Tag
 import android.nfc.TagLostException
 import android.nfc.tech.NfcA
@@ -8,18 +10,30 @@ import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import java.io.IOException
+import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
-class TagWriter : ViewModel() {
+class TagWriter(app: Application) : AndroidViewModel(app) {
     /** A button press waiting for a tag, with the passphrase as it was then. */
     private class Pending(val job: Job, val passphrase: String)
 
-    data class Sheet(val prompt: String, val result: Outcome? = null)
+    data class Sheet(val prompt: Words, val result: Outcome? = null)
 
-    var passphrase by mutableStateOf("")
-    var status by mutableStateOf("")
+    private val prefs = app.getSharedPreferences("tagpen", Context.MODE_PRIVATE)
+
+    // What the tag gets and, while Remember is on, the passphrase are kept on this phone so they
+    // are there next time. They guard company tags at a stand, not a bank, so having them ready is worth more
+    // than hiding them from a phone its owner has unlocked.
+    var typed by mutableStateOf(prefs.getString("link", "").orEmpty())
+        private set
+    var remember by mutableStateOf(prefs.getBoolean("remember", true))
+        private set
+    var passphrase by mutableStateOf(if (prefs.getBoolean("remember", true)) prefs.getString("passphrase", "").orEmpty() else "")
+        private set
+
+    var status by mutableStateOf<Words?>(null)
         private set
     var sheet by mutableStateOf<Sheet?>(null)
         private set
@@ -32,6 +46,25 @@ class TagWriter : ViewModel() {
     private val demoTag = DemoTag()
     private var current: Pending? = null
     private val waiting = AtomicReference<Pending?>(null)
+
+    fun updateTyped(value: String) {
+        typed = value
+        prefs.edit().putString("link", value).apply()
+    }
+
+    fun updatePassphrase(value: String) {
+        passphrase = value
+        if (remember) prefs.edit().putString("passphrase", value).apply()
+    }
+
+    fun updateRemember(value: Boolean) {
+        remember = value
+        prefs.edit().apply {
+            putBoolean("remember", value)
+            if (value) putString("passphrase", passphrase) else remove("passphrase")
+            apply()
+        }
+    }
 
     fun start(job: Job) {
         val pending = Pending(job, passphrase)
@@ -79,7 +112,7 @@ class TagWriter : ViewModel() {
                     throw TagGone()
                 }
             }
-            perform(pending.job, pending.passphrase, transceiver, tag.id)
+            perform(pending.job, pending.passphrase, transceiver, tag.id, Locale.getDefault().language)
         } catch (_: TagGone) {
             Outcome(false, Say.LOST)
         } catch (_: IOException) {

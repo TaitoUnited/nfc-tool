@@ -1,4 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tarrat NFC</string>
+    <string name="app_name">Tag Pen</string>
+
+    <string name="demo">Demo: tag taps are simulated, no real tag.</string>
+    <string name="no_nfc">This device cannot write NFC tags.</string>
+    <string name="nfc_off">NFC is off. Turn it on to write tags.</string>
+    <string name="open_nfc_settings">Open the NFC settings</string>
+    <string name="content">Content</string>
+    <string name="content_placeholder">A link, text, phone number or email</string>
+    <string name="content_footer">A phone that touches the tag opens a link, offers to call or email, or gets the text. The app keeps what you type on this phone.</string>
+    <string name="last_result">Last result</string>
+    <string name="passphrase">Passphrase</string>
+    <string name="remember">Remember on this phone</string>
+    <string name="passphrase_saved">Saved on this phone. Protecting a tag, removing its protection and rewriting a protected tag need the passphrase.</string>
+    <string name="passphrase_not_saved">Protecting a tag, removing its protection and rewriting a protected tag need it. The app saves it only while Remember is on.</string>
+    <string name="protect_header">Protect</string>
+    <string name="protect">Protect the tag</string>
+    <string name="unprotect">Remove the protection</string>
+    <string name="protect_footer">Protect locks the tag so only this passphrase can rewrite it. Phones still read it. Remove the protection to make it writable again.</string>
+    <string name="write">Write to the tag</string>
+    <string name="confirm_protect">Remember the passphrase \"%1$s\". Without it, nobody can change the tag again, you included.</string>
+    <string name="cancel">Cancel</string>
+    <string name="simulated_tap">Simulated tag tap</string>
+
+    <string name="writes_text">Writes this as text. A phone shows it only in an app that reads NFC tags.</string>
+    <string name="offers_email">Phones offer to email %1$s.</string>
+    <string name="offers_call">Phones offer to call %1$s.</string>
+    <string name="opens">Phones open %1$s.</string>
+    <string name="size_fits_213">%1$d bytes, fits an NTAG213, 215 or 216.</string>
+    <string name="size_needs_215">%1$d bytes, needs an NTAG215 or 216.</string>
+    <string name="size_needs_216">%1$d bytes, needs an NTAG216.</string>
+    <string name="size_too_long">%1$d bytes, too long for an NTAG216, which takes 868.</string>
+
+    <string name="hold">Hold the back of the phone on the tag.</string>
+    <string name="hold_to_protect">Hold the back of the phone on the tag to protect it.</string>
+    <string name="hold_to_unprotect">Hold the back of the phone on the tag to remove its protection.</string>
+    <string name="wrote">Wrote the tag. Test it outside the app before you protect it.</string>
+    <string name="protected_tag">Protected the tag. Phones still read it.</string>
+    <string name="not_holding">This tag does not hold what is typed above, so it stays unprotected.</string>
+    <string name="too_long">This takes %1$d bytes, the tag holds %2$d.</string>
+    <string name="not_formatted">This tag cannot hold NFC content.</string>
+    <string name="removed">Removed the protection. Anyone can rewrite the tag now.</string>
+    <string name="needs_passphrase">This tag is protected. Type its passphrase first.</string>
+    <string name="wrong_keeps_tag">Wrong passphrase. The tag stays as it was.</string>
+    <string name="wrong_keeps_protection">Wrong passphrase. The tag stays protected.</string>
+    <string name="already_protected">This tag is protected already.</string>
+    <string name="not_protected">This tag has no protection to remove.</string>
+    <string name="not_ntag">This is not an NTAG213, 215 or 216 tag.</string>
+    <string name="lost">The tag moved away. Hold the phone still on it and try again.</string>
+    <string name="cannot_read_settings">Could not read the tag\'s settings.</string>
+    <string name="cannot_read">Could not read the tag.</string>
+    <string name="cannot_write">Could not write the tag.</string>
+    <string name="locked_for_good">This tag is locked for good.</string>
+    <string name="cannot_set_password">Could not set the password.</string>
+    <string name="cannot_set_protection">Could not set the protection.</string>
+    <string name="cannot_turn_on">Could not turn the protection on.</string>
+    <string name="did_not_take">The protection did not take.</string>
+    <string name="cannot_remove">Could not remove the protection.</string>
+    <string name="still_on">The protection is still on.</string>
 </resources>

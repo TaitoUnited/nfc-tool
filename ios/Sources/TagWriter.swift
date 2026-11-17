@@ -1,33 +1,28 @@
 import CoreNFC
 import CryptoKit
 
-struct Pack: Identifiable {
-  let id: String
-  let url: URL
-}
-
-let packs = [
-  Pack(id: "Signal", url: URL(string: "https://signal.art/addstickers/#pack_id=1b601d8c2945a9e8dc10874112903887&pack_key=53b95b66cb5d040123a385cfb74cfd4ca308621ccf7574d93a2a3050a2b8e750")!),
-  Pack(id: "Telegram", url: URL(string: "https://t.me/addstickers/taitounited")!),
-]
-
 enum Say {
   static func hold(_ job: TagWriter.Job) -> String {
     switch job {
-    case .write(let pack): return "Hold the top of the iPhone on the \(pack.id) tag."
-    case .protect(let pack): return "Hold the top of the iPhone on the \(pack.id) tag to protect it."
-    case .unprotect: return "Hold the top of the iPhone on the tag to remove its protection."
+    case .write: return String(localized: "Hold the top of the iPhone on the tag.")
+    case .protect: return String(localized: "Hold the top of the iPhone on the tag to protect it.")
+    case .unprotect: return String(localized: "Hold the top of the iPhone on the tag to remove its protection.")
     }
   }
-  static func wrote(_ pack: Pack) -> String { "Wrote the \(pack.id) link. Test it before you protect the tag." }
-  static func protected(_ pack: Pack) -> String { "Protected the \(pack.id) tag. Phones still read it." }
-  static func notHolding(_ pack: Pack) -> String { "This tag does not hold the \(pack.id) link, so it stays unprotected." }
-  static let removed = "Removed the protection. Anyone can rewrite the tag now."
-  static let needsPassphrase = "This tag is protected. Type its passphrase first."
-  static let wrongKeepsTag = "Wrong passphrase. The tag stays as it was."
-  static let wrongKeepsProtection = "Wrong passphrase. The tag stays protected."
-  static let alreadyProtected = "This tag is protected already."
-  static let notProtected = "This tag has no protection to remove."
+  static let wrote = String(localized: "Wrote the tag. Test it before you protect it.")
+  static let protected = String(localized: "Protected the tag. Phones still read it.")
+  static let notHolding = String(localized: "This tag does not hold what is typed above, so it stays unprotected.")
+  static let notFormatted = String(localized: "This tag cannot hold NFC content.")
+  static let removed = String(localized: "Removed the protection. Anyone can rewrite the tag now.")
+  static let needsPassphrase = String(localized: "This tag is protected. Type its passphrase first.")
+  static let wrongKeepsTag = String(localized: "Wrong passphrase. The tag stays as it was.")
+  static let wrongKeepsProtection = String(localized: "Wrong passphrase. The tag stays protected.")
+  static let alreadyProtected = String(localized: "This tag is protected already.")
+  static let notProtected = String(localized: "This tag has no protection to remove.")
+  static let notNtag = String(localized: "This is not an NTAG213, 215 or 216 tag.")
+  static func tooLong(_ message: Int, _ room: Int) -> String {
+    String(localized: "This takes \(message) bytes, the tag holds \(room).")
+  }
 }
 
 // The tag stores a 4-byte password and a 2-byte acknowledge. Mixing in the UID gives each tag its
@@ -80,7 +75,7 @@ struct Ntag {
 }
 
 final class TagWriter: NSObject, ObservableObject, NFCTagReaderSessionDelegate {
-  enum Job { case write(Pack), protect(Pack), unprotect }
+  enum Job { case write(Content), protect(Content), unprotect }
 
   @Published var status = ""
   @Published var demoTap: DemoTap?
@@ -112,27 +107,27 @@ final class TagWriter: NSObject, ObservableObject, NFCTagReaderSessionDelegate {
   func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
     guard let job else { return }
     guard tags.count == 1, let found = tags.first else {
-      session.alertMessage = "More than one tag found. Hold just one."
+      session.alertMessage = String(localized: "More than one tag found. Hold just one.")
       DispatchQueue.main.asyncAfter(deadline: .now() + 1) { session.restartPolling() }
       return
     }
     guard case .miFare(let tag) = found, tag.mifareFamily == .ultralight else {
-      return fail(session, "This is not an NTAG213, 215 or 216 tag.")
+      return fail(session, Say.notNtag)
     }
     session.connect(to: found) { error in
       if let error { return self.fail(session, error.localizedDescription) }
       Ntag.open(tag) { ntag in
-        guard let ntag else { return self.fail(session, "This is not an NTAG213, 215 or 216 tag.") }
+        guard let ntag else { return self.fail(session, Say.notNtag) }
         ntag.readConfig { cfg in
-          guard let cfg else { return self.fail(session, "Could not read the tag's settings.") }
+          guard let cfg else { return self.fail(session, String(localized: "Could not read the tag's settings.")) }
           let isProtected = cfg[3] <= ntag.lastConfigPage
           let key = Key(passphrase: self.passphrase, uid: tag.identifier)
           switch job {
-          case .write(let pack):
-            self.write(pack, to: ntag, key: isProtected ? key : nil, in: session)
-          case .protect(let pack):
+          case .write(let content):
+            self.write(content, to: ntag, key: isProtected ? key : nil, in: session)
+          case .protect(let content):
             if isProtected { return self.fail(session, Say.alreadyProtected) }
-            self.protect(ntag, holding: pack, key: key, cfg: cfg, in: session)
+            self.protect(ntag, holding: content, key: key, cfg: cfg, in: session)
           case .unprotect:
             if !isProtected { return self.fail(session, Say.notProtected) }
             self.unprotect(ntag, key: key, cfg: cfg, in: session)
@@ -142,50 +137,47 @@ final class TagWriter: NSObject, ObservableObject, NFCTagReaderSessionDelegate {
     }
   }
 
-  private func write(_ pack: Pack, to ntag: Ntag, key: Key?, in session: NFCTagReaderSession) {
-    let message = NFCNDEFMessage(records: [NFCNDEFPayload.wellKnownTypeURIPayload(url: pack.url)!])
+  private func write(_ content: Content, to ntag: Ntag, key: Key?, in session: NFCTagReaderSession) {
+    guard let message = content.message() else { return fail(session, String(localized: "Could not encode this for the tag.")) }
     let tag = ntag.tag
-    let writeLink = {
+    let writeContent = {
       tag.queryNDEFStatus { ndef, capacity, error in
         if let error { return self.fail(session, error.localizedDescription) }
-        guard ndef != .notSupported else { return self.fail(session, "This tag cannot hold a link.") }
-        guard ndef != .readOnly else { return self.fail(session, "This tag is locked for good.") }
+        guard ndef != .notSupported else { return self.fail(session, Say.notFormatted) }
+        guard ndef != .readOnly else { return self.fail(session, String(localized: "This tag is locked for good.")) }
         guard message.length <= capacity else {
-          return self.fail(session, "The link takes \(message.length) bytes, the tag holds \(capacity).")
+          return self.fail(session, Say.tooLong(message.length, capacity))
         }
         tag.writeNDEF(message) { error in
           if let error { return self.fail(session, error.localizedDescription) }
-          self.succeed(session, Say.wrote(pack))
+          self.succeed(session, Say.wrote)
         }
       }
     }
-    guard let key else { return writeLink() }
+    guard let key else { return writeContent() }
     guard !passphrase.isEmpty else { return fail(session, Say.needsPassphrase) }
     ntag.authenticate(key) { ok in
-      ok ? writeLink() : self.fail(session, Say.wrongKeepsTag)
+      ok ? writeContent() : self.fail(session, Say.wrongKeepsTag)
     }
   }
 
-  // Protection goes only on a tag that holds the right link. AUTH0 goes last, as the data sheet
+  // Protection goes only on a tag that holds what is typed. AUTH0 goes last, as the data sheet
   // advises, and AUTHLIM stays 0: with a limit, wrong guesses would freeze the tag for good.
-  private func protect(_ ntag: Ntag, holding pack: Pack, key: Key, cfg: [UInt8], in session: NFCTagReaderSession) {
+  private func protect(_ ntag: Ntag, holding content: Content, key: Key, cfg: [UInt8], in session: NFCTagReaderSession) {
     ntag.tag.readNDEF { message, _ in
-      let url = message?.records.first?.wellKnownTypeURIPayload()
-      guard url?.absoluteString == pack.url.absoluteString else {
-        return self.fail(session, Say.notHolding(pack))
-      }
+      guard content.isHeld(in: message) else { return self.fail(session, Say.notHolding) }
       let access = cfg[4] & 0x58
       ntag.write(page: ntag.config + 2, key.pwd) { ok in
-        guard ok else { return self.fail(session, "Could not set the password.") }
+        guard ok else { return self.fail(session, String(localized: "Could not set the password.")) }
         ntag.write(page: ntag.config + 3, key.pack + [0, 0]) { ok in
-          guard ok else { return self.fail(session, "Could not set the password.") }
+          guard ok else { return self.fail(session, String(localized: "Could not set the password.")) }
           ntag.write(page: ntag.config + 1, [access, cfg[5], cfg[6], cfg[7]]) { ok in
-            guard ok else { return self.fail(session, "Could not set the protection.") }
+            guard ok else { return self.fail(session, String(localized: "Could not set the protection.")) }
             ntag.write(page: ntag.config, [cfg[0], cfg[1], cfg[2], 0x00]) { ok in
-              guard ok else { return self.fail(session, "Could not turn the protection on.") }
+              guard ok else { return self.fail(session, String(localized: "Could not turn the protection on.")) }
               ntag.readConfig { check in
-                guard check?[3] == 0x00 else { return self.fail(session, "The protection did not take.") }
-                self.succeed(session, Say.protected(pack))
+                guard check?[3] == 0x00 else { return self.fail(session, String(localized: "The protection did not take.")) }
+                self.succeed(session, Say.protected)
               }
             }
           }
@@ -198,9 +190,9 @@ final class TagWriter: NSObject, ObservableObject, NFCTagReaderSessionDelegate {
     ntag.authenticate(key) { ok in
       guard ok else { return self.fail(session, Say.wrongKeepsProtection) }
       ntag.write(page: ntag.config, [cfg[0], cfg[1], cfg[2], 0xFF]) { ok in
-        guard ok else { return self.fail(session, "Could not remove the protection.") }
+        guard ok else { return self.fail(session, String(localized: "Could not remove the protection.")) }
         ntag.readConfig { check in
-          guard check?[3] == 0xFF else { return self.fail(session, "The protection is still on.") }
+          guard check?[3] == 0xFF else { return self.fail(session, String(localized: "The protection is still on.")) }
           self.succeed(session, Say.removed)
         }
       }

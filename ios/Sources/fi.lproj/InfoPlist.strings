@@ -1,0 +1,3 @@
+"CFBundleDisplayName" = "NFC Kynä";
+"CFBundleName" = "NFC Kynä";
+"NFCReaderUsageDescription" = "Kirjoittaa linkkejä ja tekstiä NFC-tageihin ja suojaa ne.";

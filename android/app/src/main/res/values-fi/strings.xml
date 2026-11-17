@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NFC Kynä</string>
+
+    <string name="demo">Demo: tagin kosketukset ovat simuloituja, oikeaa tagia ei ole.</string>
+    <string name="no_nfc">Tällä laitteella ei voi kirjoittaa NFC-tageihin.</string>
+    <string name="nfc_off">NFC on pois päältä. Laita se päälle, niin voit kirjoittaa tageihin.</string>
+    <string name="open_nfc_settings">Avaa NFC-asetukset</string>
+    <string name="content">Sisältö</string>
+    <string name="content_placeholder">Linkki, teksti, puhelinnumero tai sähköposti</string>
+    <string name="content_footer">Puhelin, joka koskettaa tagia, avaa linkin, tarjoutuu soittamaan tai lähettämään sähköpostia tai saa tekstin. Sovellus säilyttää kirjoittamasi tässä puhelimessa.</string>
+    <string name="last_result">Viimeisin tulos</string>
+    <string name="passphrase">Salasana</string>
+    <string name="remember">Muista tässä puhelimessa</string>
+    <string name="passphrase_saved">Tallennettu tähän puhelimeen. Tagin suojaaminen, suojauksen poistaminen ja suojatun tagin uudelleenkirjoittaminen vaativat salasanan.</string>
+    <string name="passphrase_not_saved">Tagin suojaaminen, suojauksen poistaminen ja suojatun tagin uudelleenkirjoittaminen vaativat sen. Sovellus tallentaa sen vain, kun Muista on päällä.</string>
+    <string name="protect_header">Suojaus</string>
+    <string name="protect">Suojaa tag</string>
+    <string name="unprotect">Poista suojaus</string>
+    <string name="protect_footer">Suojaus lukitsee tagin niin, että vain tällä salasanalla voi kirjoittaa sen uudelleen. Puhelimet lukevat sen silti. Poista suojaus, niin tagiin voi taas kirjoittaa.</string>
+    <string name="write">Kirjoita tagiin</string>
+    <string name="confirm_protect">Muista salasana \"%1$s\". Ilman sitä kukaan ei voi enää muuttaa tagia, et sinäkään.</string>
+    <string name="cancel">Peruuta</string>
+    <string name="simulated_tap">Simuloitu tagin kosketus</string>
+
+    <string name="writes_text">Kirjoittaa tämän tekstinä. Puhelin näyttää sen vain sovelluksessa, joka lukee NFC-tageja.</string>
+    <string name="offers_email">Puhelimet tarjoutuvat lähettämään sähköpostia osoitteeseen %1$s.</string>
+    <string name="offers_call">Puhelimet tarjoutuvat soittamaan numeroon %1$s.</string>
+    <string name="opens">Puhelimet avaavat osoitteen %1$s.</string>
+    <string name="size_fits_213">%1$d tavua, mahtuu NTAG213-, NTAG215- tai NTAG216-tagiin.</string>
+    <string name="size_needs_215">%1$d tavua, vaatii NTAG215- tai NTAG216-tagin.</string>
+    <string name="size_needs_216">%1$d tavua, vaatii NTAG216-tagin.</string>
+    <string name="size_too_long">%1$d tavua, liian pitkä NTAG216-tagiin, johon mahtuu 868.</string>
+
+    <string name="hold">Pidä puhelimen takaosaa tagin päällä.</string>
+    <string name="hold_to_protect">Pidä puhelimen takaosaa tagin päällä suojataksesi sen.</string>
+    <string name="hold_to_unprotect">Pidä puhelimen takaosaa tagin päällä poistaaksesi sen suojauksen.</string>
+    <string name="wrote">Tag kirjoitettu. Testaa se sovelluksen ulkopuolella ennen kuin suojaat sen.</string>
+    <string name="protected_tag">Tag suojattu. Puhelimet lukevat sen silti.</string>
+    <string name="not_holding">Tagissa ei ole yllä kirjoitettua sisältöä, joten se jää suojaamatta.</string>
+    <string name="too_long">Tämä vie %1$d tavua, tagiin mahtuu %2$d.</string>
+    <string name="not_formatted">Tähän tagiin ei voi tallentaa NFC-sisältöä.</string>
+    <string name="removed">Suojaus poistettu. Kuka tahansa voi nyt kirjoittaa tagin uudelleen.</string>
+    <string name="needs_passphrase">Tag on suojattu. Kirjoita ensin sen salasana.</string>
+    <string name="wrong_keeps_tag">Väärä salasana. Tag pysyy ennallaan.</string>
+    <string name="wrong_keeps_protection">Väärä salasana. Tag pysyy suojattuna.</string>
+    <string name="already_protected">Tag on jo suojattu.</string>
+    <string name="not_protected">Tagissa ei ole poistettavaa suojausta.</string>
+    <string name="not_ntag">Tämä ei ole NTAG213-, NTAG215- tai NTAG216-tag.</string>
+    <string name="lost">Tag liikkui pois. Pidä puhelin paikallaan tagin päällä ja yritä uudelleen.</string>
+    <string name="cannot_read_settings">Tagin asetuksia ei voitu lukea.</string>
+    <string name="cannot_read">Tagia ei voitu lukea.</string>
+    <string name="cannot_write">Tagiin ei voitu kirjoittaa.</string>
+    <string name="locked_for_good">Tag on lukittu pysyvästi.</string>
+    <string name="cannot_set_password">Salasanaa ei voitu asettaa.</string>
+    <string name="cannot_set_protection">Suojausta ei voitu asettaa.</string>
+    <string name="cannot_turn_on">Suojausta ei voitu ottaa käyttöön.</string>
+    <string name="did_not_take">Suojaus ei jäänyt voimaan.</string>
+    <string name="cannot_remove">Suojausta ei voitu poistaa.</string>
+    <string name="still_on">Suojaus on yhä päällä.</string>
+</resources>

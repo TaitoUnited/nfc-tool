@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Tarrat NFC</string>
+	<string>Tag Pen</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,7 +21,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NFCReaderUsageDescription</key>
-	<string>Writes the sticker pack links to NFC tags.</string>
+	<string>Writes links and text to NFC tags and protects them.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

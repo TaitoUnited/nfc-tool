@@ -1,37 +1,40 @@
-name: TarratNFC
+name: TagPen
 options:
-  bundleIdPrefix: app.tarrat
+  bundleIdPrefix: app.tagpen
   deploymentTarget:
     iOS: "17.0"
 settings:
   SWIFT_VERSION: "5.0"
 targets:
-  TarratNFC:
+  TagPen:
     type: application
     platform: iOS
     sources: [Sources]
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: Tarrat NFC
+        CFBundleDisplayName: Tag Pen
         UILaunchScreen: {}
-        NFCReaderUsageDescription: Writes the sticker pack links to NFC tags.
+        NFCReaderUsageDescription: Writes links and text to NFC tags and protects them.
     entitlements:
-      path: Sources/TarratNFC.entitlements
+      path: Sources/TagPen.entitlements
       properties:
         com.apple.developer.nfc.readersession.formats: [TAG]
     settings:
+      # The development profile on this Mac covers this id only; a new one needs an App ID in the
+      # team that publishes the app.
       PRODUCT_BUNDLE_IDENTIFIER: app.tarrat.nfc
       TARGETED_DEVICE_FAMILY: "1"
       CODE_SIGN_STYLE: Automatic
+      ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     scheme:
-      testTargets: [TarratNFCUITests]
-  TarratNFCUITests:
+      testTargets: [TagPenUITests]
+  TagPenUITests:
     type: bundle.ui-testing
     platform: iOS
     sources: [UITests]
     dependencies:
-      - target: TarratNFC
+      - target: TagPen
     settings:
       GENERATE_INFOPLIST_FILE: YES
       TARGETED_DEVICE_FAMILY: "1"

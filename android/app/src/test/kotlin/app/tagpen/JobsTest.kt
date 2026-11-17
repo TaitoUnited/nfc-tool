@@ -1,4 +1,4 @@
-package app.tarrat.nfc
+package app.tagpen
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -8,8 +8,6 @@ import org.junit.Assert.fail
 import org.junit.Test
 
 class JobsTest {
-    private val signal = packs.first { it.id == "Signal" }
-    private val telegram = packs.first { it.id == "Telegram" }
     private val uid = hex("04A24B1A2C5D80")
 
     private fun FakeNtag.tap(job: Job, passphrase: String = ""): Outcome {
@@ -21,8 +19,8 @@ class JobsTest {
     fun writesALinkOnAFreshTag() {
         for (type in listOf(215, 216)) {
             val tag = FakeNtag(type)
-            assertEquals(Outcome(true, Say.wrote(signal)), tag.tap(Job.Write(signal)))
-            assertEquals(signal.url, tag.url)
+            assertEquals(Outcome(true, Say.WROTE), tag.tap(Job.Write(signal)))
+            assertEquals(signal, tag.content)
         }
     }
 
@@ -31,14 +29,24 @@ class JobsTest {
         val tag = FakeNtag(213)
         assertTrue(tag.tap(Job.Write(telegram)).ok)
         assertEquals("0103A00C34", hex(tag.data.copyOfRange(0, 5)))
-        assertEquals(telegram.url, tag.url)
+        assertEquals(telegram, tag.content)
     }
 
     @Test
     fun signalLinkDoesNotFitAnNtag213() {
         val tag = FakeNtag(213)
         assertEquals(Outcome(false, Say.tooLong(143, 137)), tag.tap(Job.Write(signal)))
-        assertNull(tag.url)
+        assertNull(tag.content)
+    }
+
+    @Test
+    fun writesAndProtectsText() {
+        val note = Content.Text("Kumpulan Potentiaali, osasto 12")
+        val tag = FakeNtag(213)
+        assertEquals(Outcome(true, Say.WROTE), tag.tap(Job.Write(note)))
+        assertEquals(note, tag.content)
+        assertEquals(Outcome(false, Say.NOT_HOLDING), tag.tap(Job.Protect(Content.Text("other")), "kumpula26"))
+        assertEquals(Outcome(true, Say.PROTECTED), tag.tap(Job.Protect(note), "kumpula26"))
     }
 
     @Test
@@ -48,11 +56,11 @@ class JobsTest {
     }
 
     @Test
-    fun protectRefusesATagWithoutThatPacksLink() {
+    fun protectRefusesATagWithoutTheTypedContent() {
         val tag = FakeNtag()
-        assertEquals(Outcome(false, Say.notHolding(signal)), tag.tap(Job.Protect(signal), "kumpula26"))
+        assertEquals(Outcome(false, Say.NOT_HOLDING), tag.tap(Job.Protect(signal), "kumpula26"))
         tag.tap(Job.Write(telegram))
-        assertEquals(Outcome(false, Say.notHolding(signal)), tag.tap(Job.Protect(signal), "kumpula26"))
+        assertEquals(Outcome(false, Say.NOT_HOLDING), tag.tap(Job.Protect(signal), "kumpula26"))
         assertEquals(0xFF, tag.auth0)
     }
 
@@ -60,12 +68,12 @@ class JobsTest {
     fun protectSetsTheIosPasswordAndKeepsTheTagReadable() {
         val tag = FakeNtag()
         tag.tap(Job.Write(signal))
-        assertEquals(Outcome(true, Say.protected(signal)), tag.tap(Job.Protect(signal), "kumpula26"))
+        assertEquals(Outcome(true, Say.PROTECTED), tag.tap(Job.Protect(signal), "kumpula26"))
         assertEquals("9734B605", tag.pwd)
         assertEquals("F0860000", tag.pack)
         assertEquals(0x00, tag.auth0)
         assertEquals(0x00, tag.access)
-        assertEquals(signal.url, tag.url)
+        assertEquals(signal, tag.content)
         assertEquals(Outcome(false, Say.ALREADY_PROTECTED), tag.tap(Job.Protect(signal), "kumpula26"))
     }
 
@@ -85,9 +93,9 @@ class JobsTest {
         tag.tap(Job.Protect(signal), "kumpula26")
         assertEquals(Outcome(false, Say.NEEDS_PASSPHRASE), tag.tap(Job.Write(telegram)))
         assertEquals(Outcome(false, Say.WRONG_KEEPS_TAG), tag.tap(Job.Write(telegram), "kumpula25"))
-        assertEquals(signal.url, tag.url)
-        assertEquals(Outcome(true, Say.wrote(telegram)), tag.tap(Job.Write(telegram), "kumpula26"))
-        assertEquals(telegram.url, tag.url)
+        assertEquals(signal, tag.content)
+        assertEquals(Outcome(true, Say.WROTE), tag.tap(Job.Write(telegram), "kumpula26"))
+        assertEquals(telegram, tag.content)
         assertEquals(0x00, tag.auth0)
     }
 
@@ -101,7 +109,7 @@ class JobsTest {
         assertEquals(0x00, tag.auth0)
         assertEquals(Outcome(true, Say.REMOVED), tag.tap(Job.Unprotect, "kumpula26"))
         assertEquals(0xFF, tag.auth0)
-        assertEquals(Outcome(true, Say.wrote(telegram)), tag.tap(Job.Write(telegram)))
+        assertEquals(Outcome(true, Say.WROTE), tag.tap(Job.Write(telegram)))
     }
 
     @Test
@@ -126,11 +134,11 @@ class JobsTest {
                 } catch (_: TagGone) {
                     false
                 }
-                val url = tag.url
+                val held = tag.content
                 when {
-                    finished -> assertEquals(new.url, url)
-                    writes == 0 -> assertEquals(old.url, url)
-                    else -> assertTrue("NTAG$type after $writes writes holds $url", url == null)
+                    finished -> assertEquals(new, held)
+                    writes == 0 -> assertEquals(old, held)
+                    else -> assertTrue("NTAG$type after $writes writes holds $held", held == null)
                 }
                 if (finished) break
                 if (writes == 60) fail("The write never finished")
@@ -141,7 +149,7 @@ class JobsTest {
     @Test
     fun demoTagFollowsTheSameRules() {
         val demo = DemoTag()
-        assertEquals(Say.notHolding(signal), demo.tap(Job.Protect(signal), "x").text)
+        assertEquals(Say.NOT_HOLDING, demo.tap(Job.Protect(signal), "x").text)
         assertTrue(demo.tap(Job.Write(signal), "").ok)
         assertTrue(demo.tap(Job.Protect(signal), "x").ok)
         assertEquals(Say.NEEDS_PASSPHRASE, demo.tap(Job.Write(telegram), "").text)

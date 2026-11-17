@@ -1,4 +1,4 @@
-package app.tarrat.nfc
+package app.tagpen
 
 // The NFC Forum URI record type: the first payload byte stands for one of these prefixes.
 private val uriPrefixes = listOf(
@@ -16,24 +16,34 @@ private const val TLV_TERMINATOR = 0xFE
 private fun ByteArray.u8(i: Int) = this[i].toInt() and 0xFF
 
 object Ndef {
-    /** An NDEF message of one well-known URI record, as the iOS app writes it. */
-    fun uriMessage(url: String): ByteArray {
-        val code = uriPrefixes.indices.drop(1)
-            .filter { url.startsWith(uriPrefixes[it]) }
-            .maxByOrNull { uriPrefixes[it].length } ?: 0
-        val payload = byteArrayOf(code.toByte()) + url.substring(uriPrefixes[code].length).toByteArray()
-        val type = byteArrayOf('U'.code.toByte())
-        return if (payload.size <= 0xFF) {
-            byteArrayOf(0xD1.toByte(), 1, payload.size.toByte()) + type + payload
-        } else {
-            val n = payload.size
-            byteArrayOf(0xC1.toByte(), 1, (n ushr 24).toByte(), (n ushr 16).toByte(), (n ushr 8).toByte(), n.toByte()) +
-                type + payload
+    /** An NDEF message of one well-known record, as the iOS app writes it. */
+    fun message(content: Content, language: String): ByteArray = when (content) {
+        is Content.Link -> {
+            val uri = content.uri
+            val code = uriPrefixes.indices.drop(1)
+                .filter { uri.startsWith(uriPrefixes[it]) }
+                .maxByOrNull { uriPrefixes[it].length } ?: 0
+            record('U', byteArrayOf(code.toByte()) + uri.substring(uriPrefixes[code].length).toByteArray())
+        }
+        // The status byte holds the language code's length; bit 7 clear means UTF-8.
+        is Content.Text -> {
+            val lang = language.toByteArray(Charsets.US_ASCII)
+            record('T', byteArrayOf(lang.size.toByte()) + lang + content.text.toByteArray())
         }
     }
 
-    /** The URI of the message's first record, or null when that is no well-known URI record. */
-    fun firstUri(message: ByteArray): String? {
+    private fun record(type: Char, payload: ByteArray): ByteArray {
+        val n = payload.size
+        val header = if (n <= 0xFF) {
+            byteArrayOf(0xD1.toByte(), 1, n.toByte())
+        } else {
+            byteArrayOf(0xC1.toByte(), 1, (n ushr 24).toByte(), (n ushr 16).toByte(), (n ushr 8).toByte(), n.toByte())
+        }
+        return header + byteArrayOf(type.code.toByte()) + payload
+    }
+
+    /** The content of the message's first record, or null when that is no well-known URI or text record. */
+    fun firstContent(message: ByteArray): Content? {
         if (message.size < 3) return null
         val header = message.u8(0)
         val typeLength = message.u8(1)
@@ -46,12 +56,22 @@ object Ndef {
                 .also { i += 4 }
         }
         val idLength = if (header and 0x08 != 0) message.u8(i++) else 0
-        if (i + typeLength > message.size) return null
-        val isUri = header and 0x07 == 1 && typeLength == 1 && message[i] == 'U'.code.toByte()
+        if (header and 0x07 != 1 || typeLength != 1 || i >= message.size) return null
+        val type = message[i].toInt().toChar()
         i += typeLength + idLength
-        if (!isUri || payloadLength < 1 || payloadLength > message.size - i) return null
-        val prefix = uriPrefixes.getOrNull(message.u8(i)) ?: return null
-        return prefix + String(message, i + 1, payloadLength - 1, Charsets.UTF_8)
+        if (payloadLength < 1 || payloadLength > message.size - i) return null
+        val first = message.u8(i)
+        return when (type) {
+            'U' -> uriPrefixes.getOrNull(first)?.let {
+                Content.Link(it + String(message, i + 1, payloadLength - 1, Charsets.UTF_8))
+            }
+            'T' -> {
+                val lang = first and 0x3F
+                if (first and 0x80 != 0 || 1 + lang > payloadLength) return null
+                Content.Text(String(message, i + 1 + lang, payloadLength - 1 - lang, Charsets.UTF_8))
+            }
+            else -> null
+        }
     }
 
     /** The NDEF message TLV, its 1-byte or 3-byte length first. */

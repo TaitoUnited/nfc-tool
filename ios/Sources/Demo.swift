@@ -3,7 +3,7 @@ import Foundation
 // The -demo launch argument plays each tap on a pretend tag, so the app can be shown on a
 // simulator, which has no NFC. The pretend tag follows the same rules and says the same things.
 struct DemoTag {
-  var url: URL?
+  var content: Content?
   var passphrase: String?
 }
 
@@ -28,18 +28,18 @@ extension TagWriter {
 
   private func demoOutcome(_ job: Job) -> (Bool, String) {
     switch job {
-    case .write(let pack):
+    case .write(let content):
       if let key = demoTag.passphrase {
         if passphrase.isEmpty { return (false, Say.needsPassphrase) }
         if passphrase != key { return (false, Say.wrongKeepsTag) }
       }
-      demoTag.url = pack.url
-      return (true, Say.wrote(pack))
-    case .protect(let pack):
+      demoTag.content = content
+      return (true, Say.wrote)
+    case .protect(let content):
       if demoTag.passphrase != nil { return (false, Say.alreadyProtected) }
-      guard demoTag.url == pack.url else { return (false, Say.notHolding(pack)) }
+      guard demoTag.content == content else { return (false, Say.notHolding) }
       demoTag.passphrase = passphrase
-      return (true, Say.protected(pack))
+      return (true, Say.protected)
     case .unprotect:
       guard let key = demoTag.passphrase else { return (false, Say.notProtected) }
       guard passphrase == key else { return (false, Say.wrongKeepsProtection) }

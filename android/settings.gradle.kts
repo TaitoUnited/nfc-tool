@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TarratNFC"
+rootProject.name = "TagPen"
 include(":app")

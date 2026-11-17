@@ -1,4 +1,4 @@
-package app.tarrat.nfc
+package app.tagpen
 
 import java.io.IOException
 
@@ -38,7 +38,7 @@ class FakeNtag(type: Int = 215, private val productType: Int = 0x04) : Transceiv
     val pwd get() = hex(pages[config + 2])
     val pack get() = hex(pages[config + 3])
     val data get() = (4 until 4 + (pages[3][2].toInt() and 0xFF) * 2).flatMap { pages[it].toList() }.toByteArray()
-    val url get() = Ndef.find(data)?.message?.let(Ndef::firstUri)
+    val content get() = Ndef.find(data)?.message?.let(Ndef::firstContent)
 
     /** A new tap: the tag starts over in the ACTIVE state. */
     fun reconnect() {

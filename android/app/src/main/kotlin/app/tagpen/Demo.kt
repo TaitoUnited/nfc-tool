@@ -1,9 +1,9 @@
-package app.tarrat.nfc
+package app.tagpen
 
 // The demo intent extra plays each tap on a pretend tag, so the app can be shown on an emulator,
 // which has no NFC. The pretend tag follows the same rules and says the same things.
 class DemoTag {
-    private var url: String? = null
+    private var content: Content? = null
     private var passphrase: String? = null
 
     fun tap(job: Job, typed: String): Outcome = when (job) {
@@ -13,17 +13,17 @@ class DemoTag {
                 key != null && typed.isEmpty() -> Outcome(false, Say.NEEDS_PASSPHRASE)
                 key != null && typed != key -> Outcome(false, Say.WRONG_KEEPS_TAG)
                 else -> {
-                    url = job.pack.url
-                    Outcome(true, Say.wrote(job.pack))
+                    content = job.content
+                    Outcome(true, Say.WROTE)
                 }
             }
         }
         is Job.Protect -> when {
             passphrase != null -> Outcome(false, Say.ALREADY_PROTECTED)
-            url != job.pack.url -> Outcome(false, Say.notHolding(job.pack))
+            content != job.content -> Outcome(false, Say.NOT_HOLDING)
             else -> {
                 passphrase = typed
-                Outcome(true, Say.protected(job.pack))
+                Outcome(true, Say.PROTECTED)
             }
         }
         Job.Unprotect -> when (passphrase) {
