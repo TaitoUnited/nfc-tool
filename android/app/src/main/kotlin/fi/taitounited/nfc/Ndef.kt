@@ -1,4 +1,4 @@
-package app.tagpen
+package fi.taitounited.nfc
 
 // The NFC Forum URI record type: the first payload byte stands for one of these prefixes.
 private val uriPrefixes = listOf(

@@ -1,4 +1,4 @@
-package app.tagpen
+package fi.taitounited.nfc
 
 /** Runs [job] on an NTAG21x over one NfcA connection, step for step as the iOS app does. */
 fun perform(job: Job, passphrase: String, tag: Transceiver, uid: ByteArray, language: String = "en"): Outcome {

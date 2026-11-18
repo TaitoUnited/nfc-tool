@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tag Pen</string>
+    <string name="app_name">Taito NFC</string>
 
     <string name="demo">Demo: tag taps are simulated, no real tag.</string>
     <string name="no_nfc">This device cannot write NFC tags.</string>

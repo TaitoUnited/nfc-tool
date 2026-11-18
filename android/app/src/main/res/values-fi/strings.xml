@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NFC Kynä</string>
+    <string name="app_name">Taito NFC</string>
 
     <string name="demo">Demo: tagin kosketukset ovat simuloituja, oikeaa tagia ei ole.</string>
     <string name="no_nfc">Tällä laitteella ei voi kirjoittaa NFC-tageihin.</string>

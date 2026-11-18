@@ -1,40 +1,41 @@
-name: TagPen
+name: TaitoNFC
 options:
-  bundleIdPrefix: app.tagpen
+  bundleIdPrefix: fi.taitounited
   deploymentTarget:
     iOS: "17.0"
 settings:
   SWIFT_VERSION: "5.0"
 targets:
-  TagPen:
+  TaitoNFC:
     type: application
     platform: iOS
     sources: [Sources]
     info:
       path: Sources/Info.plist
       properties:
-        CFBundleDisplayName: Tag Pen
+        CFBundleDisplayName: Taito NFC
         UILaunchScreen: {}
         NFCReaderUsageDescription: Writes links and text to NFC tags and protects them.
+        ITSAppUsesNonExemptEncryption: false
     entitlements:
-      path: Sources/TagPen.entitlements
+      path: Sources/TaitoNFC.entitlements
       properties:
         com.apple.developer.nfc.readersession.formats: [TAG]
     settings:
-      # The development profile on this Mac covers this id only; a new one needs an App ID in the
-      # team that publishes the app.
-      PRODUCT_BUNDLE_IDENTIFIER: app.tarrat.nfc
+      # An App ID is unique across all teams, so signing this id with any team but Taito United
+      # Oy's would take it from the team that publishes the app.
+      PRODUCT_BUNDLE_IDENTIFIER: fi.taitounited.nfc
       TARGETED_DEVICE_FAMILY: "1"
       CODE_SIGN_STYLE: Automatic
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     scheme:
-      testTargets: [TagPenUITests]
-  TagPenUITests:
+      testTargets: [TaitoNFCUITests]
+  TaitoNFCUITests:
     type: bundle.ui-testing
     platform: iOS
     sources: [UITests]
     dependencies:
-      - target: TagPen
+      - target: TaitoNFC
     settings:
       GENERATE_INFOPLIST_FILE: YES
       TARGETED_DEVICE_FAMILY: "1"

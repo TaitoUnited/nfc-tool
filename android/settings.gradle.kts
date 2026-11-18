@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TagPen"
+rootProject.name = "TaitoNFC"
 include(":app")

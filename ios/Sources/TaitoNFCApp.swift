@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 @main
-struct TagPenApp: App {
+struct TaitoNFCApp: App {
   var body: some Scene {
     WindowGroup { ContentView() }
   }
@@ -15,9 +15,9 @@ struct ContentView: View {
   @AppStorage("rememberPassphrase") private var remember = true
   @State private var confirmingProtect = false
 
-  // The home screen name, NFC Kynä on a phone set to Finnish, from fi.lproj/InfoPlist.strings.
+  // The home screen name, from fi.lproj/InfoPlist.strings on a phone set to Finnish.
   private static let appName = Bundle.main.localizedInfoDictionary?["CFBundleDisplayName"] as? String
-    ?? Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String ?? "Tag Pen"
+    ?? Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String ?? "Taito NFC"
 
   private var content: Content? { Content(typed: typed) }
 

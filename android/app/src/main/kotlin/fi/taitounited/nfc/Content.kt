@@ -1,4 +1,4 @@
-package app.tagpen
+package fi.taitounited.nfc
 
 /** What a tag holds: the one record a phone acts on when it touches the tag. */
 sealed interface Content {

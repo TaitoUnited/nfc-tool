@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "app.tagpen"
+    namespace = "fi.taitounited.nfc"
     // Compose 1.12 needs compileSdk 37; targetSdk stays 36, which Google Play asks for since August 2026.
     compileSdk {
         version = release(37) {
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "app.tagpen"
+        applicationId = "fi.taitounited.nfc"
         minSdk = 26
         targetSdk = 36
         versionCode = 1

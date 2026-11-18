@@ -5,7 +5,7 @@ import Foundation
 enum Keychain {
   private static let base: [String: Any] = [
     kSecClass as String: kSecClassGenericPassword,
-    kSecAttrService as String: "app.tarrat.nfc",
+    kSecAttrService as String: "fi.taitounited.nfc",
     kSecAttrAccount as String: "passphrase",
   ]
 

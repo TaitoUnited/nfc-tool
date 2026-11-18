@@ -1,4 +1,4 @@
-package app.tagpen
+package fi.taitounited.nfc
 
 // The demo intent extra plays each tap on a pretend tag, so the app can be shown on an emulator,
 // which has no NFC. The pretend tag follows the same rules and says the same things.

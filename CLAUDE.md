@@ -1,8 +1,8 @@
-# Tag Pen
+# Taito NFC
 
-Tag Pen, NFC Kynä in Finnish, writes a link, email address, phone number or text, typed in the
-app, to NTAG213, 215 and 216 tags and protects them with the tag's write password. The Android app is in `android/`, the iOS app in
-`ios/`.
+Taito NFC writes a link, email address, phone number or text, typed in the app, to NTAG213, 215
+and 216 tags and protects them with the tag's write password. The Android app is in `android/`,
+the iOS app in `ios/`.
 
 ## Build and test Android
 
@@ -25,7 +25,7 @@ platform 37.1, and the Gradle wrapper.
 `ios/project.yml` is the source of the Xcode project, which git ignores. From the repository root:
 
 - Generate the project: `(cd ios && xcodegen generate)`
-- Build for the simulator: `xcodebuild -project ios/TagPen.xcodeproj -scheme TagPen
+- Build for the simulator: `xcodebuild -project ios/TaitoNFC.xcodeproj -scheme TaitoNFC
   -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build CODE_SIGNING_ALLOWED=NO build`
 
 The `-demo` launch argument plays the taps on a pretend tag, as the Android `demo` extra does.
@@ -33,7 +33,7 @@ The `-demo` launch argument plays the taps on a pretend tag, as the Android `dem
 ## Try it without a tag
 
 An emulator has no NFC. The `demo` intent extra plays each tap on a pretend tag that follows the
-same rules: `adb shell am start -n app.tagpen/.MainActivity --ez demo true`.
+same rules: `adb shell am start -n fi.taitounited.nfc/.MainActivity --ez demo true`.
 
 ## Rules the code follows
 
@@ -48,12 +48,14 @@ same rules: `adb shell am start -n app.tagpen/.MainActivity --ez demo true`.
   https://, an email address and a phone number as a URI record, anything else as a UTF-8 text
   record in the phone's language. `Content.kt` and `Content.swift` read the typing the same way, and
   `ContentTest` holds the cases. Protect refuses a tag that does not already hold what is typed.
-- The app's name is Tag Pen, and NFC Kynä on a phone set to Finnish. Every sentence on screen has
-  an English and a Finnish version: a new one goes into `ios/Sources/fi.lproj/Localizable.strings`
-  and `android/app/src/main/res/values-fi/strings.xml` too, and lint fails on a missing Android
+- The app's name is Taito NFC in every language. Every sentence on screen has an English and a
+  Finnish version: a new one goes into `ios/Sources/fi.lproj/Localizable.strings` and
+  `android/app/src/main/res/values-fi/strings.xml` too, and lint fails on a missing Android
   translation. The Finnish keeps the English word tag, inflected as tagin and tagiin, and uses
   salasana for passphrase. The demo UI test finds its controls by accessibility id, so it runs in
-  both languages: add `-testLanguage fi` to the test command for the Finnish one. The Android id is `app.tagpen`. The
-  iOS bundle id stays `app.tarrat.nfc`, the one the development profile on this Mac covers, until
-  the app gets an App ID in the team that publishes it.
+  both languages: add `-testLanguage fi` to the test command for the Finnish one.
+- Both apps are `fi.taitounited.nfc`, the Android application id and package and the iOS bundle
+  id. Taito United Oy publishes them, so the iOS app is signed only with Taito United Oy's Apple
+  team: an App ID is unique across all teams, and signing it with another team, such as a
+  personal one for a device build, registers it there and keeps it from Taito United Oy's.
 - NXP's NTAG213/215/216 data sheet, rev. 3.2, is the reference for every command and page.

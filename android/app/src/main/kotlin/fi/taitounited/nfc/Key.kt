@@ -1,4 +1,4 @@
-package app.tagpen
+package fi.taitounited.nfc
 
 import java.security.MessageDigest
 

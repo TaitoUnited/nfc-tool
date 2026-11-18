@@ -1,4 +1,4 @@
-package app.tagpen
+package fi.taitounited.nfc
 
 // The two Taito United Oy sticker pack links the app was first made for, as fixtures for the NDEF
 // and Jobs tests.

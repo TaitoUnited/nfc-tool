@@ -1,7 +1,7 @@
-# Tag Pen
+# Taito NFC
 
-Tag Pen, in English and Finnish, where it is called NFC Kynä, is an app that writes to NFC stickers:
-a link, an email address or a phone number, which a phone held on the sticker opens or offers to
+Taito NFC is an app by Taito United Oy that writes to NFC stickers, in English and Finnish: a
+link, an email address or a phone number, which a phone held on the sticker opens or offers to
 call, or any other text. What you type stays on the phone, and the app shows what a phone will do
 with it and how many bytes it takes. Made for the Taito United Oy stand at Kumpulan Potentiaali on
 26 November 2026, where the stickers carry the Signal and Telegram sticker pack links.
@@ -17,8 +17,8 @@ one unlocks on the other.
 
 ## Parts
 
-- `android/`: the Android app, Kotlin and Jetpack Compose, application id `app.tagpen`.
-- `ios/`: the iOS app, SwiftUI with Core NFC, bundle id `app.tarrat.nfc`. Its Xcode project is
+- `android/`: the Android app, Kotlin and Jetpack Compose, application id `fi.taitounited.nfc`.
+- `ios/`: the iOS app, SwiftUI with Core NFC, bundle id `fi.taitounited.nfc`. Its Xcode project is
   generated from `ios/project.yml` with xcodegen.
 
 ## Tags
@@ -31,14 +31,14 @@ such an app is installed.
 
 ## Try it
 
-On an Android phone with NFC, install the debug build and open Tag Pen. Write a link, leave the
+On an Android phone with NFC, install the debug build and open Taito NFC. Write a link, leave the
 app and hold the phone on the tag to test it, then protect the tag.
 
 An emulator has no NFC. Started with the `demo` extra, the app plays each tap on a pretend tag that
 follows the same rules:
 
 ```bash
-adb shell am start -n app.tagpen/.MainActivity --ez demo true
+adb shell am start -n fi.taitounited.nfc/.MainActivity --ez demo true
 ```
 
 ## Build
@@ -46,14 +46,14 @@ adb shell am start -n app.tagpen/.MainActivity --ez demo true
 The Android app needs JDK 17 or newer and the Android SDK with platform 37.1 (`ANDROID_HOME`):
 
 ```bash
-(cd ~/Projects/tarrat-nfc && android/gradlew -p android testDebugUnitTest assembleDebug bundleRelease)
+(cd ~/Projects/nfc-tool && android/gradlew -p android testDebugUnitTest assembleDebug bundleRelease)
 ```
 
 The iOS app needs Xcode and xcodegen. This builds it for the simulator:
 
 ```bash
-(cd ~/Projects/tarrat-nfc/ios && xcodegen generate && xcodebuild -project TagPen.xcodeproj \
-  -scheme TagPen -destination 'generic/platform=iOS Simulator' -derivedDataPath build \
+(cd ~/Projects/nfc-tool/ios && xcodegen generate && xcodebuild -project TaitoNFC.xcodeproj \
+  -scheme TaitoNFC -destination 'generic/platform=iOS Simulator' -derivedDataPath build \
   CODE_SIGNING_ALLOWED=NO build)
 ```
 
@@ -62,5 +62,5 @@ In the simulator, the `-demo` launch argument plays the taps on a pretend tag.
 ## Start with Claude Code
 
 ```text
-in ~/Projects/tarrat-nfc read CLAUDE.md, build the android and ios apps and run the unit tests, then tell me how to try them on my phone
+clone github.com/TaitoUnited/nfc-tool into ~/Projects/nfc-tool, read its CLAUDE.md, build the android and ios apps and run the unit tests, then tell me how to try them on my phone
 ```

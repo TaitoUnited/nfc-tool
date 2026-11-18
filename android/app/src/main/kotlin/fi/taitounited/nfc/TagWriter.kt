@@ -1,4 +1,4 @@
-package app.tagpen
+package fi.taitounited.nfc
 
 import android.app.Application
 import android.content.Context
@@ -21,7 +21,7 @@ class TagWriter(app: Application) : AndroidViewModel(app) {
 
     data class Sheet(val prompt: Words, val result: Outcome? = null)
 
-    private val prefs = app.getSharedPreferences("tagpen", Context.MODE_PRIVATE)
+    private val prefs = app.getSharedPreferences("taitonfc", Context.MODE_PRIVATE)
 
     // What the tag gets and, while Remember is on, the passphrase are kept on this phone so they
     // are there next time. They guard company tags at a stand, not a bank, so having them ready is worth more
