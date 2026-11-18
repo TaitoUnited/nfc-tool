@@ -64,3 +64,14 @@ In the simulator, the `-demo` launch argument plays the taps on a pretend tag.
 ```text
 clone github.com/TaitoUnited/nfc-tool into ~/Projects/nfc-tool, read its CLAUDE.md, build the android and ios apps and run the unit tests, then tell me how to try them on my phone
 ```
+
+## Privacy
+
+The app collects nothing and has no network access: [PRIVACY.md](PRIVACY.md), in English and
+Finnish, is the privacy policy the app stores link to.
+
+## Licence
+
+The code is under the GNU Affero General Public License, version 3 or later, in
+[LICENSE](LICENSE). The README, the docs and the images are under Creative Commons
+Attribution-ShareAlike 4.0, in [LICENSE-PROSE](LICENSE-PROSE).
