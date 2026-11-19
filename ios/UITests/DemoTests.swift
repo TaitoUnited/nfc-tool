@@ -2,13 +2,17 @@ import XCTest
 
 // Walks the demo at a pace a viewer can follow and saves a screenshot at each step into
 // DEMO_OUT, passed as TEST_RUNNER_DEMO_OUT to xcodebuild. A pretend tap shows its prompt for
-// 2.5 s and its result for 2.5 s more.
+// 2.5 s and its result for 2.5 s more. TEST_RUNNER_STORE_SCREENSHOTS=1 hides the demo note for
+// App Store screenshots.
 final class DemoTests: XCTestCase {
   let out = URL(fileURLWithPath: ProcessInfo.processInfo.environment["DEMO_OUT"] ?? NSTemporaryDirectory())
   let app = XCUIApplication()
 
   func testDemo() throws {
     app.launchArguments = ["-demo"]
+    if ProcessInfo.processInfo.environment["STORE_SCREENSHOTS"] != nil {
+      app.launchArguments.append("-store-screenshots")
+    }
     app.launch()
     try mark("started")
     pause(2)

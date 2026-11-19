@@ -41,7 +41,9 @@ struct ContentView: View {
     NavigationStack {
       List {
         if writer.isDemo {
-          Section { Label("Demo: tag taps are simulated, no real tag.", systemImage: "play.rectangle").foregroundStyle(.orange) }
+          if writer.showsDemoNote {
+            Section { Label("Demo: tag taps are simulated, no real tag.", systemImage: "play.rectangle").foregroundStyle(.orange) }
+          }
         } else if !writer.available {
           Section { Text("This device cannot write NFC tags.").foregroundStyle(.red) }
         }
@@ -138,7 +140,7 @@ struct ContentView: View {
         .accessibilityIdentifier("confirm-protect")
       }
       .sheet(item: $writer.demoTap) { tap in
-        DemoTapView(tap: tap).presentationDetents([.height(320)])
+        DemoTapView(tap: tap, showsNote: writer.showsDemoNote).presentationDetents([.height(320)])
       }
       .onAppear {
         if let saved = Keychain.load() { passphrase = saved }
@@ -166,10 +168,11 @@ struct ClearButton: View {
 
 struct DemoTapView: View {
   let tap: DemoTap
+  let showsNote: Bool
 
   var body: some View {
     VStack(spacing: 18) {
-      Text("Simulated tag tap").font(.headline).foregroundStyle(.orange)
+      if showsNote { Text("Simulated tag tap").font(.headline).foregroundStyle(.orange) }
       if let result = tap.result {
         Image(systemName: tap.ok ? "checkmark.circle.fill" : "xmark.circle.fill")
           .font(.system(size: 56)).foregroundStyle(tap.ok ? .green : .red)

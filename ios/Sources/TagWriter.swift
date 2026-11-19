@@ -85,6 +85,7 @@ final class TagWriter: NSObject, ObservableObject, NFCTagReaderSessionDelegate {
   private var session: NFCTagReaderSession?
 
   let isDemo = ProcessInfo.processInfo.arguments.contains("-demo")
+  let showsDemoNote = !ProcessInfo.processInfo.arguments.contains("-store-screenshots")
   var available: Bool { isDemo || NFCTagReaderSession.readingAvailable }
 
   func start(_ job: Job, passphrase: String) {

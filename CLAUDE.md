@@ -41,9 +41,18 @@ platform 37.1, and the Gradle wrapper.
   `ios/build/export/TaitoNFC.ipa`. It signs manually with the certificate "Apple Distribution:
   Taito United Oy" and the App Store profile "Taito NFC App Store", both installed on the Mac,
   because an App Manager of Taito United Oy's team has no access to cloud-managed signing. Raise
-  `CFBundleVersion` in `ios/Sources/Info.plist` before each upload.
+  `CFBundleVersion` in `ios/Sources/Info.plist` before each upload. To upload it to App Store
+  Connect, export with `destination` set to `upload` in a copy of `ios/export-options.plist` and
+  `-allowProvisioningUpdates`; it signs in with the Apple Account in Xcode's settings.
+- App Store screenshots: boot the simulator `iPhone 18 Pro`, whose 1206x2622 is the size App Store
+  Connect requires, set `xcrun simctl status_bar booted override --time 9:41 --batteryState charged
+  --batteryLevel 100`, then run `TEST_RUNNER_DEMO_OUT=<dir> TEST_RUNNER_STORE_SCREENSHOTS=1
+  xcodebuild test -project ios/TaitoNFC.xcodeproj -scheme TaitoNFC -destination 'name=iPhone 18 Pro'
+  -derivedDataPath ios/build CODE_SIGNING_ALLOWED=NO -testLanguage en`, and again with
+  `-testLanguage fi -testRegion FI` for the Finnish ones.
 
 The `-demo` launch argument plays the taps on a pretend tag, as the Android `demo` extra does.
+`-store-screenshots` beside it hides the notes that say the tag is pretend.
 
 ## Try it without a tag
 
