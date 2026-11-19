@@ -49,7 +49,9 @@ platform 37.1, and the Gradle wrapper.
   --batteryLevel 100`, then run `TEST_RUNNER_DEMO_OUT=<dir> TEST_RUNNER_STORE_SCREENSHOTS=1
   xcodebuild test -project ios/TaitoNFC.xcodeproj -scheme TaitoNFC -destination 'name=iPhone 18 Pro'
   -derivedDataPath ios/build CODE_SIGNING_ALLOWED=NO -testLanguage en`, and again with
-  `-testLanguage fi -testRegion FI` for the Finnish ones.
+  `-testLanguage fi -testRegion FI` for the Finnish ones. They go into `docs/store` as
+  `app-store-<en or fi>-<n>-<step>.png`, beside the Google Play icon and feature graphic, and the
+  README shows them all. The app icon has default, dark and tinted PNGs in the asset catalog.
 
 The `-demo` launch argument plays the taps on a pretend tag, as the Android `demo` extra does.
 `-store-screenshots` beside it hides the notes that say the tag is pretend.

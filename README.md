@@ -12,8 +12,46 @@ it needs the passphrase. The protection is the write password of NXP's NTAG213, 
 derived from the tag's UID and the passphrase, the same on Android and iOS, so a tag protected on
 one unlocks on the other.
 
-![The Android app in demo mode after writing the Signal link](docs/screenshots/android-demo.png)
-![The iOS app in demo mode](docs/screenshots/ios-demo.png)
+## Screenshots
+
+The iOS app's App Store screenshots, in English and Finnish:
+
+<p>
+  <img src="docs/store/app-store-en-1-start.png" width="128" alt="1, start">
+  <img src="docs/store/app-store-en-2-hold.png" width="128" alt="2, hold the phone on the tag">
+  <img src="docs/store/app-store-en-3-written.png" width="128" alt="3, written">
+  <img src="docs/store/app-store-en-4-confirm.png" width="128" alt="4, confirm the protection">
+  <img src="docs/store/app-store-en-5-protected.png" width="128" alt="5, protected">
+  <img src="docs/store/app-store-en-6-wrong-passphrase.png" width="128" alt="6, wrong passphrase">
+</p>
+<p>
+  <img src="docs/store/app-store-fi-1-start.png" width="128" alt="1, start, in Finnish">
+  <img src="docs/store/app-store-fi-2-hold.png" width="128" alt="2, hold the phone on the tag, in Finnish">
+  <img src="docs/store/app-store-fi-3-written.png" width="128" alt="3, written, in Finnish">
+  <img src="docs/store/app-store-fi-4-confirm.png" width="128" alt="4, confirm the protection, in Finnish">
+  <img src="docs/store/app-store-fi-5-protected.png" width="128" alt="5, protected, in Finnish">
+  <img src="docs/store/app-store-fi-6-wrong-passphrase.png" width="128" alt="6, wrong passphrase, in Finnish">
+</p>
+
+The Android app in demo mode after writing the Signal link:
+
+<img src="docs/screenshots/android-demo.png" width="128" alt="The Android app in demo mode">
+
+## Icon and store images
+
+<p>
+  <img src="ios/Sources/Assets.xcassets/AppIcon.appiconset/icon-1024.png" width="128" alt="The iOS icon">
+  <img src="ios/Sources/Assets.xcassets/AppIcon.appiconset/icon-1024-dark.png" width="128" alt="The dark iOS icon">
+  <img src="ios/Sources/Assets.xcassets/AppIcon.appiconset/icon-1024-tinted.png" width="128" alt="The tinted iOS icon">
+  <img src="docs/store/google-play-icon-512.png" width="128" alt="The Google Play icon">
+</p>
+
+The iOS icon in its default, dark and tinted appearances, then the Google Play icon: the Taito
+United Oy mark from the text logo on taitounited.fi, with NFC waves. The Android launcher draws the
+same shapes, and [icon.svg](docs/store/icon.svg) is the icon as a vector. The Google Play feature
+graphic is a placeholder:
+
+<img src="docs/store/google-play-feature-graphic.jpg" width="512" alt="The Google Play feature graphic">
 
 ## Parts
 
