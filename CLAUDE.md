@@ -30,6 +30,12 @@ platform 37.1, and the Gradle wrapper.
 - Archive for a device: `xcodebuild -project ios/TaitoNFC.xcodeproj -scheme TaitoNFC -configuration
   Release -destination 'generic/platform=iOS' -archivePath ios/build/TaitoNFC.xcarchive
   -allowProvisioningUpdates archive`
+- Build for the user's iPhone: `xcodebuild -project ios/TaitoNFC.xcodeproj -scheme TaitoNFC
+  -configuration Debug -destination 'id=<udid>' -derivedDataPath ios/build -allowProvisioningUpdates
+  -allowProvisioningDeviceRegistration build`, then install it with `xcrun devicectl device install
+  app --device <udid> ios/build/Build/Products/Debug-iphoneos/TaitoNFC.app`, with the UDID of the
+  physical iPhone that `xcrun devicectl list devices` lists. The install fails while the phone is
+  locked.
 - App Store build: `xcodebuild -exportArchive -archivePath ios/build/TaitoNFC.xcarchive -exportPath
   ios/build/export -exportOptionsPlist ios/export-options.plist`, out at
   `ios/build/export/TaitoNFC.ipa`. It signs manually with the certificate "Apple Distribution:
