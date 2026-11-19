@@ -47,11 +47,44 @@ The Android app in demo mode after writing the Signal link:
 </p>
 
 The iOS icon in its default, dark and tinted appearances, then the Google Play icon: the Taito
-United Oy mark from the text logo on taitounited.fi, with NFC waves. The Android launcher draws the
-same shapes, and [icon.svg](docs/store/icon.svg) is the icon as a vector. The Google Play feature
-graphic is a placeholder:
+United Oy mark, the O and U of the text logo on taitounited.fi, in white on the site's green
+#009A48, with three NFC waves. The Android launcher draws the same shapes, and
+[icon.svg](docs/store/icon.svg) is the icon as a vector. The Google Play feature graphic is a
+placeholder:
 
 <img src="docs/store/google-play-feature-graphic.jpg" width="512" alt="The Google Play feature graphic">
+
+### For designers
+
+These images are first versions drawn in code. Comments, edits and new versions are welcome, as an
+issue on this repository or in Taito United Oy's Slack. Questions to start from:
+
+- Does the icon read as Taito United Oy and as NFC at Home Screen size, and do the dark and tinted
+  versions hold up?
+- What should the feature graphic show? Google advises against repeating the app icon in it, which
+  the placeholder does.
+- Do the screenshots need captions or a device frame, or do plain captures show the app well
+  enough?
+
+A new icon reaches the stores only in a new build of both apps. What each image has to be:
+
+| Image | Size and format | Also |
+|---|---|---|
+| iOS icon | 1024x1024 px PNG, or a layered Icon Composer file | Default, dark and tinted versions |
+| Android launcher icon | Foreground and monochrome layers, 108x108 dp | The logo 48 to 66 dp across: only the middle 66x66 dp always shows |
+| Google Play icon | 512x512 px, 32-bit PNG with alpha, at most 1024 KB | |
+| Google Play feature graphic | 1024x500 px, JPEG or 24-bit PNG without alpha | Key elements near the centre, since some layouts cut the edges |
+| App Store screenshots | 1206x2622 px portrait, PNG or JPEG, up to 10 per language | The six above, in English and Finnish |
+| Google Play phone screenshots | 2 to 8, PNG or JPEG, 9:16 portrait, each side 320 to 3,840 px | Not made yet |
+
+Sources: Apple's app icon guidelines,
+[https://developer.apple.com/design/human-interface-guidelines/app-icons](https://developer.apple.com/design/human-interface-guidelines/app-icons),
+App Store Connect's screenshot specifications,
+[https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/](https://developer.apple.com/help/app-store-connect/reference/app-information/screenshot-specifications/),
+Google Play's preview asset guidelines,
+[https://support.google.com/googleplay/android-developer/answer/9866151](https://support.google.com/googleplay/android-developer/answer/9866151),
+and Android's adaptive icon guide,
+[https://developer.android.com/develop/ui/views/launch/icon_design_adaptive](https://developer.android.com/develop/ui/views/launch/icon_design_adaptive).
 
 ## Parts
 
