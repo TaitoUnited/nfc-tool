@@ -16,6 +16,8 @@ final class DemoTests: XCTestCase {
 
     // A vertical TextField shows up as a text view, so it is found by its identifier alone.
     let content = app.descendants(matching: .any).matching(identifier: "tag-content").firstMatch
+    let clear = app.buttons["clear-content"]
+    if clear.exists { clear.tap() }
     content.tap()
     content.typeText("https://t.me/addstickers/taitounited")
     app.buttons["keyboard-done"].firstMatch.tap()

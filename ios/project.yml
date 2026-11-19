@@ -25,6 +25,7 @@ targets:
       # An App ID is unique across all teams, so signing this id with any team but Taito United
       # Oy's would take it from the team that publishes the app.
       PRODUCT_BUNDLE_IDENTIFIER: fi.taitounited.nfc
+      DEVELOPMENT_TEAM: EPATC4S9N2
       TARGETED_DEVICE_FAMILY: "1"
       CODE_SIGN_STYLE: Automatic
       ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon

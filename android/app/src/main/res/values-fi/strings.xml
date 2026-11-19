@@ -58,4 +58,5 @@
     <string name="did_not_take">Suojaus ei jäänyt voimaan.</string>
     <string name="cannot_remove">Suojausta ei voitu poistaa.</string>
     <string name="still_on">Suojaus on yhä päällä.</string>
+    <string name="clear">Tyhjennä</string>
 </resources>

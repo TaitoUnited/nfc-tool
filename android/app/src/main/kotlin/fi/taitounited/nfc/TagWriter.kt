@@ -26,7 +26,7 @@ class TagWriter(app: Application) : AndroidViewModel(app) {
     // What the tag gets and, while Remember is on, the passphrase are kept on this phone so they
     // are there next time. They guard company tags at a stand, not a bank, so having them ready is worth more
     // than hiding them from a phone its owner has unlocked.
-    var typed by mutableStateOf(prefs.getString("link", "").orEmpty())
+    var typed by mutableStateOf(prefs.getString("link", "taitounited.fi").orEmpty())
         private set
     var remember by mutableStateOf(prefs.getBoolean("remember", true))
         private set

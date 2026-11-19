@@ -10,7 +10,7 @@ struct TaitoNFCApp: App {
 
 struct ContentView: View {
   @StateObject private var writer = TagWriter()
-  @AppStorage("linkURL") private var typed = ""
+  @AppStorage("linkURL") private var typed = "taitounited.fi"
   @State private var passphrase = ""
   @AppStorage("rememberPassphrase") private var remember = true
   @State private var confirmingProtect = false
@@ -46,11 +46,14 @@ struct ContentView: View {
           Section { Text("This device cannot write NFC tags.").foregroundStyle(.red) }
         }
         Section {
-          TextField("A link, text, phone number or email", text: $typed, axis: .vertical)
-            .lineLimit(1...5)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .accessibilityIdentifier("tag-content")
+          HStack {
+            TextField("A link, text, phone number or email", text: $typed, axis: .vertical)
+              .lineLimit(1...5)
+              .textInputAutocapitalization(.never)
+              .autocorrectionDisabled()
+              .accessibilityIdentifier("tag-content")
+            ClearButton(text: $typed).accessibilityIdentifier("clear-content")
+          }
         } header: {
           Text("Content")
         } footer: {
@@ -61,10 +64,13 @@ struct ContentView: View {
           Section("Last result") { Text(writer.status) }
         }
         Section {
-          TextField("Passphrase", text: $passphrase)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .accessibilityIdentifier("passphrase")
+          HStack {
+            TextField("Passphrase", text: $passphrase)
+              .textInputAutocapitalization(.never)
+              .autocorrectionDisabled()
+              .accessibilityIdentifier("passphrase")
+            ClearButton(text: $passphrase).accessibilityIdentifier("clear-passphrase")
+          }
           Toggle("Remember on this phone", isOn: $remember)
         } header: {
           Text("Passphrase")
@@ -139,6 +145,21 @@ struct ContentView: View {
       }
       .onChange(of: passphrase) { persist() }
       .onChange(of: remember) { persist() }
+    }
+  }
+}
+
+struct ClearButton: View {
+  @Binding var text: String
+
+  var body: some View {
+    if !text.isEmpty {
+      // Borderless, so a tap elsewhere in the list row does not clear the field.
+      Button { text = "" } label: {
+        Image(systemName: "xmark.circle.fill").foregroundStyle(Color(uiColor: .tertiaryLabel))
+      }
+      .buttonStyle(.borderless)
+      .accessibilityLabel("Clear")
     }
   }
 }

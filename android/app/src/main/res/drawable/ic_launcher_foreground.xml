@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A sticker with a curled corner and the NFC waves, inside the 66 dp safe zone. -->
+<!-- The Taito United Oy mark sending NFC waves, inside the 66 dp safe zone. A placeholder until the designers' logo. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M38,30H70A8,8 0,0 1,78 38V64L64,78H38A8,8 0,0 1,30 70V38A8,8 0,0 1,38 30Z" />
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.64"
+        android:pathData="M32.58,48.12a9.71,9.71 0,1 0,19.42,0a9.71,9.71 0,1 0,-19.42,0" />
     <path
-        android:fillColor="#AEB8C2"
-        android:pathData="M78,64L64,78V70Q64,64 70,64Z" />
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.90"
+        android:pathData="M35.13,80.00V65.65A7.18,7.18 0,0 1,49.49,65.65V80.00" />
     <path
-        android:fillColor="#1E96C8"
-        android:pathData="M42,54m-3.5,0a3.5,3.5 0,1 0,7 0a3.5,3.5 0,1 0,-7 0" />
-    <path
-        android:strokeColor="#1E96C8"
-        android:strokeWidth="4.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="4.80"
         android:strokeLineCap="round"
-        android:pathData="M48.36,47.64A9,9 0,0 1,48.36 60.36M53.31,42.69A16,16 0,0 1,53.31 65.31M58.26,37.74A23,23 0,0 1,58.26 70.26" />
+        android:pathData="M56.84,35.90A19.00,19.00 0,0 1,56.84,60.33M62.21,31.40A26.00,26.00 0,0 1,62.21,64.83M67.57,26.91A33.00,33.00 0,0 1,67.57,69.33" />
 </vector>

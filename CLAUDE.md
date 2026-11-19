@@ -27,6 +27,15 @@ platform 37.1, and the Gradle wrapper.
 - Generate the project: `(cd ios && xcodegen generate)`
 - Build for the simulator: `xcodebuild -project ios/TaitoNFC.xcodeproj -scheme TaitoNFC
   -destination 'generic/platform=iOS Simulator' -derivedDataPath ios/build CODE_SIGNING_ALLOWED=NO build`
+- Archive for a device: `xcodebuild -project ios/TaitoNFC.xcodeproj -scheme TaitoNFC -configuration
+  Release -destination 'generic/platform=iOS' -archivePath ios/build/TaitoNFC.xcarchive
+  -allowProvisioningUpdates archive`
+- App Store build: `xcodebuild -exportArchive -archivePath ios/build/TaitoNFC.xcarchive -exportPath
+  ios/build/export -exportOptionsPlist ios/export-options.plist`, out at
+  `ios/build/export/TaitoNFC.ipa`. It signs manually with the certificate "Apple Distribution:
+  Taito United Oy" and the App Store profile "Taito NFC App Store", both installed on the Mac,
+  because an App Manager of Taito United Oy's team has no access to cloud-managed signing. Raise
+  `CFBundleVersion` in `ios/Sources/Info.plist` before each upload.
 
 The `-demo` launch argument plays the taps on a pretend tag, as the Android `demo` extra does.
 
@@ -48,6 +57,8 @@ same rules: `adb shell am start -n fi.taitounited.nfc/.MainActivity --ez demo tr
   https://, an email address and a phone number as a URI record, anything else as a UTF-8 text
   record in the phone's language. `Content.kt` and `Content.swift` read the typing the same way, and
   `ContentTest` holds the cases. Protect refuses a tag that does not already hold what is typed.
+  A fresh install starts with taitounited.fi in the field, and an x on the right clears the
+  content and the passphrase.
 - The app's name is Taito NFC in every language. Every sentence on screen has an English and a
   Finnish version: a new one goes into `ios/Sources/fi.lproj/Localizable.strings` and
   `android/app/src/main/res/values-fi/strings.xml` too, and lint fails on a missing Android
@@ -56,6 +67,7 @@ same rules: `adb shell am start -n fi.taitounited.nfc/.MainActivity --ez demo tr
   both languages: add `-testLanguage fi` to the test command for the Finnish one.
 - Both apps are `fi.taitounited.nfc`, the Android application id and package and the iOS bundle
   id. Taito United Oy publishes them, so the iOS app is signed only with Taito United Oy's Apple
-  team: an App ID is unique across all teams, and signing it with another team, such as a
-  personal one for a device build, registers it there and keeps it from Taito United Oy's.
+  team, EPATC4S9N2, which `ios/project.yml` sets: an App ID is unique across all teams, and
+  signing it with another team, such as a personal one for a device build, registers it there and
+  keeps it from Taito United Oy's.
 - NXP's NTAG213/215/216 data sheet, rev. 3.2, is the reference for every command and page.

@@ -28,6 +28,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -192,6 +193,7 @@ fun Screen(writer: TagWriter, nfc: Nfc, openNfcSettings: () -> Unit) {
                         value = writer.typed,
                         onValueChange = writer::updateTyped,
                         placeholder = { Text(stringResource(R.string.content_placeholder)) },
+                        trailingIcon = { ClearButton(writer.typed) { writer.updateTyped("") } },
                         maxLines = 5,
                         enabled = available,
                         keyboardOptions = KeyboardOptions(
@@ -215,6 +217,7 @@ fun Screen(writer: TagWriter, nfc: Nfc, openNfcSettings: () -> Unit) {
                         value = passphrase,
                         onValueChange = writer::updatePassphrase,
                         label = { Text(stringResource(R.string.passphrase)) },
+                        trailingIcon = { ClearButton(passphrase) { writer.updatePassphrase("") } },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.None,
@@ -311,6 +314,15 @@ private fun TapSheet(sheet: TagWriter.Sheet, demo: Boolean, onCancel: () -> Unit
             } else {
                 Spacer(Modifier.height(48.dp))
             }
+        }
+    }
+}
+
+@Composable
+private fun ClearButton(text: String, onClear: () -> Unit) {
+    if (text.isNotEmpty()) {
+        IconButton(onClick = onClear) {
+            Icon(painterResource(R.drawable.ic_clear), contentDescription = stringResource(R.string.clear))
         }
     }
 }
